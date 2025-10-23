@@ -1,61 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Roster Importer
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Roster Importer is a polished demo app that fuses my two passions: sports and esports with the kind of engineering craft I bring to every build. The project showcases a production-grade Laravel + React stack that ingests roster spreadsheets, validates every row, and lifts the data into a modern coaching workflow. Whether it is a traditional club lineup or a competitive gaming roster, the importer keeps things fast, safe, and coach-friendly.
 
-## About Laravel
+![Roster Importer Screenshot](docs/screenshot.png)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## What’s Inside
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Player-first UX:** Upload CSV/XLSX files, map columns, dry-run the changes, then apply them in a single transaction with error CSV exports for any bad rows.
+- **Idempotent imports:** File hashes prevent accidental double uploads—perfect for busy tournament days.
+- **Import history:** Coaches get the last 10 runs with counts, status, and download links for error reports.
+- **Secure authentication:** Laravel Sanctum powers SPA token auth so staff can safely manage sensitive rosters.
+- **Tested workflow:** Pest feature tests cover the full happy path and the tricky edge cases (duplicates, validation errors, etc.).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+| Layer      | Tech                                                                 |
+| ---------- | -------------------------------------------------------------------- |
+| Backend    | Laravel 12, Laravel Excel, Sanctum, Form Requests, custom services   |
+| Frontend   | React 18, Vite, TypeScript, Tailwind CSS 4, React Hook Form, Hot Toast |
+| Database   | SQLite locally (MySQL-ready in production)                           |
+| Tooling    | Pest, Laravel Pint, GitHub Actions CI                                |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Getting Up and Running
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Prerequisites
+- PHP 8.2+
+- Composer 2.6+
+- Node.js 20+
+- SQLite (bundled) or a MySQL-compatible database
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Installation
 
-## Laravel Sponsors
+```bash
+cd roster-importer/api
+composer install
+npm install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --database=sqlite
+php artisan db:seed
+```
 
-### Premium Partners
+### Local Development
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+php artisan serve            # API @ http://127.0.0.1:8000
+npm run dev -- --host 127.0.0.1  # SPA with hot reload @ http://127.0.0.1:5173
+```
 
-## Contributing
+Sign in with the seeded coach credentials:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Email: `coach@example.com`
+- Password: `password`
 
-## Code of Conduct
+### Useful Commands
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan test        # Run Pest suite
+./vendor/bin/pint --test # Enforce code style
+npm run build           # Compile production assets (public/build)
+```
 
-## Security Vulnerabilities
+## Deployment Notes
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **API (Render / Railway / Fly.io):** configure `APP_URL`, database credentials, and run `php artisan migrate --force` on deploy.
+- **Frontend (Netlify / Vercel):** `cd roster-importer/api && npm install && npm run build`; publish `roster-importer/api/public` and point it at the deployed API.
+- **Auth:** When splitting API and SPA domains, set `SANCTUM_STATEFUL_DOMAINS`, CORS headers, and serve over HTTPS.
 
-## License
+## Continuous Integration
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+`.github/workflows/ci.yml` runs on every push and PR:
+
+1. Installs Composer dependencies and generates the app key.
+2. Installs Node dependencies and builds the frontend.
+3. Executes Pint in `--test` mode.
+4. Runs `php artisan test`.
+
+## Project Layout
+
+```
+roster-importer/
+├── api/
+│   ├── app/              # Domain models, HTTP layer, services
+│   ├── database/         # Migrations, factories, seeders
+│   ├── resources/js/     # React + Tailwind SPA
+│   ├── resources/views/  # Blade bootstrap for the SPA
+│   └── tests/            # Pest feature + unit suites
+└── docs/                 # Screenshots & UX notes
+```
+
+## Seed Data
+
+After `php artisan db:seed` the database includes:
+
+- `Team`: **Skyline FC**
+- `User`: `coach@example.com` / `password`
+
+This account powers the SPA login and the automated tests.
+
+---
+
+From packed stadiums to packed arenas, I love building tools that give coaches, analysts, and team managers their competitive edge. If you’re doing something exciting in sports or esports, let’s build the next play together.
