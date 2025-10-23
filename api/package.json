@@ -6,12 +6,26 @@
         "build": "vite build",
         "dev": "vite"
     },
+    "dependencies": {
+        "axios": "^1.11.0",
+        "clsx": "^2.1.1",
+        "papaparse": "^5.4.1",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-hook-form": "^7.53.0",
+        "react-hot-toast": "^2.4.1"
+    },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
-        "axios": "^1.11.0",
+        "@types/papaparse": "^5.3.11",
+        "@types/react": "^18.3.7",
+        "@types/react-dom": "^18.3.0",
+        "@vitejs/plugin-react": "^4.3.2",
         "concurrently": "^9.0.1",
         "laravel-vite-plugin": "^2.0.0",
         "tailwindcss": "^4.0.0",
+        "tslib": "^2.6.2",
+        "typescript": "^5.4.5",
         "vite": "^7.0.7"
     }
 }
