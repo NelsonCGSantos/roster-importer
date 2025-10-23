@@ -2,7 +2,7 @@
 
 Roster Importer is a polished demo app that fuses my two passions: sports and esports with the kind of engineering craft I bring to every build. The project showcases a production-grade Laravel + React stack that ingests roster spreadsheets, validates every row, and lifts the data into a modern coaching workflow. Whether it is a traditional club lineup or a competitive gaming roster, the importer keeps things fast, safe, and coach-friendly.
 
-![Roster Importer Screenshot](roster-importer/api/docs/screenshot.png)
+![Roster Importer Screenshot](docs/screenshot.png)
 
 ## What’s Inside
 
